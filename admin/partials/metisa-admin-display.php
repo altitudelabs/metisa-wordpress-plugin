@@ -17,6 +17,8 @@
 
 <div class="wrap">
   <h1><?= esc_html(get_admin_page_title()); ?></h1>
+
+  <h3>Step 1: Authenticate with Metisa</h3>
   <div>
     <input id="oauth-authorize" name="oauth" type="button" value="Authenticate with Metisa" class="button button-secondary" />
   </div>
@@ -29,4 +31,39 @@
       <?php submit_button( 'Save authentication code' ); ?>
     </form>
   </div>
+
+
+<?php
+if ( get_option( 'metisa_access_token') )
+{
+  $woocommerce_query_params = array(
+    'app_name' => urlencode('Metisa for WooCommerce'),
+    'scope' => 'read_write',
+    'return_url' => menu_page_url('Metisa'),
+    'callback_url' => 'https://localhost:8001/integrations/woocommerce/api/',
+    'user_id' => site_url()
+  );
+
+  $woocommerce_api_key_endpoint = add_query_arg( $woocommerce_query_params, site_url( '/wc-auth/v1/authorize/?' ) );
+
+  log_me($woocommerce_query_params);
+  log_me($woocommerce_api_key_endpoint);
+
+  // $woocommerce_api_key_endpoint = site_url( '/wc-auth/v1/authorize/?' );
+  // $metisa_app_name = Metisa_Admin::plugin_name;
+  // $metisa_scope_requested = 'read_write';
+  // $metisa_return_url = menu_page_url('Metisa');
+  // $metisa_callback_url = 'https://localhost:8001/integrations/woocommerce/api/';
+  // $woocommerce_user_id = site_url();
+?>
+  <h3>Step 2: Connect Metisa to your store</h3>
+  <div>
+    <a class="button button-primary" href="<?php echo $woocommerce_api_key_endpoint ?>">
+      Connect Metisa
+    </a>
+  </div>
+<?php
+}
+?>
+
 </div>

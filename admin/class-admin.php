@@ -205,8 +205,6 @@ class Metisa_Admin {
 
 				log_me('$response after json_decode: ');
 				log_me($response);
-				// log_me($response['access-token']);
-				// log_me($response['refresh-token']);
 
 				foreach($response as $key => $value) {
 					if ( $key == 'access_token' ) {
@@ -224,11 +222,10 @@ class Metisa_Admin {
 	    }
 		}
 
-
-
 		wp_redirect( $_SERVER['HTTP_REFERER'] );
+
+		// Callback attached to hooks must be explicitly killed in WP.
 		die();
-	  return false;
 	}
 
 	// 2 Token Types: (1) access_token and (2) refresh_token.
@@ -241,9 +238,21 @@ class Metisa_Admin {
 	    update_option( 'metisa_refresh_token', $token, '', 'yes');
 	  }
 	}
+
+
+	/**
+	 * WooCommerce section
+	 *
+	 * Functions used to generate WC REST API keys and send to Metisa.
+	 */
+
+	// Get WooCommerce REST API consumer_key and consumer_secret via HTTP.
+	function get_woocommerce_api_keys() {
+
+	}
+
+	// Send API keys and user_id (to identify which store) to Metisa via HTTP.
+	function post_keys_to_metisa() {
+
+	}
 }
-
-
-/**
- * This is outside the class definition.
- */
