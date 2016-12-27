@@ -19,8 +19,8 @@
 			var state = 'chickennutbread';
 
 			// Build authorization link to OAuth2 Service Provider
-			var url = 'http://localhost:8000/oauth/authorize/';
-			url += '?response_type=code&client_id=N7H2c1X3Kg8uw9MwY3QAWkiq81iFiGDEIrbm4BMz&state=';
+			var url = 'http://localhost:8001/oauth/authorize/';
+			url += '?response_type=code&client_id=of4tZkhMb1W5FODyuWXoBi7rLpOQMNguFso0yikm&state=';
 			url += state;
 
 			return url;
