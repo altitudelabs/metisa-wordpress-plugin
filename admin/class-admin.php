@@ -174,7 +174,7 @@ class Metisa_Admin {
 		log_me('try inside authenticate_client_with_metisa() fired.');
 
     // Get access response that contains access token.
-    $response = wp_remote_post( 'http://localhost:8001/oauth/token/', array(
+    $response = wp_remote_post( 'http://192.168.1.119:8001/oauth/token/', array(
 			'headers' => array(
 				'Content-Type' => 'application/x-www-form-urlencoded'
 			),
@@ -183,12 +183,14 @@ class Metisa_Admin {
       'body' => array(
         'code' => $authorization_code,
         'grant_type' => 'authorization_code',
-        'redirect_uri' => 'http://localhost:8001/integrations/woocommerce/code/',
-        'client_id' => 'NMo0n3J6PBic9VoSZblGQ3bWiBDBIZe2n4wHepZC',
-        'client_secret' => 'V8fmCMe1R372SD1T8GDLahH6p5c5fyEKVdA9Q1EOEOrBcnVoYgKWbSvAzrPhH8Vzlln5QqHr3Mib6dmbKCmq35HGV3ZD9Uqp0EDExfTo5qHIOgoygogbGn4gVzvenVxm'
+        'redirect_uri' => 'http://192.168.1.119:8001/integrations/woocommerce/code/',
+        'client_id' => 'pf1flhhoOPukYmdJaI69FMXXAM0xJUTrCQsSsex7',
+        'client_secret' => 'Y5gd28VBW6BlCZDbnBLbL5otCpP0VTezlheyQ7Wr8OMU6pqWQQXq4xg54YaFQLMKcLWYS0SwZYoWQzvIjZKmVPNuE0d0t523DM8aVIbiMz0bYzBKUCkUFFax7rHvj3GN'
         )
       )
     );
+
+		log_me('RESPONSE RECEIVED!');
 
 		// Handle errors.
 		if ( is_wp_error( $response ) ) {
@@ -197,24 +199,32 @@ class Metisa_Admin {
 			log_me('Logging error message: ');
 			log_me($error_message);
 		} else {
-			log_me('No errors, received response: ');
-			log_me($response);
+			// Retrieve access token and save to db.
+			if ( !empty( $response ) ) {
+				$response = json_decode( wp_remote_retrieve_body( $response ), true );
+
+				log_me('$response after json_decode: ');
+				log_me($response);
+				// log_me($response['access-token']);
+				// log_me($response['refresh-token']);
+
+				foreach($response as $key => $value) {
+					if ( $key == 'access_token' ) {
+						$access_token = $value;
+					} elseif ( $key == 'refresh_token' ) {
+						$refresh_token = $value;
+					}
+				}
+
+	      // Save the access token.
+	      $this->save_token_to_db( $access_token, 'access_token' );
+
+	      // Save the refresh token.
+	      $this->save_token_to_db( $refresh_token, 'refresh_token' );
+	    }
 		}
 
-    // if ( !empty( $response ) ) {
-    //   $response = json_decode( $response );
-		//
-    //   if ( is_object( $response ) ) {
-		// 		log_me('Access token received.');
-		// 		log_me($response->access_token);
-		//
-    //     // Save the access token.
-    //     save_token_to_db( $response->access_token, 'access_token' );
-		//
-    //     // Save the refresh token.
-    //     save_token_to_db( $response->refresh_token, 'refresh_token' );
-    //   }
-    // }
+
 
 		wp_redirect( $_SERVER['HTTP_REFERER'] );
 		die();

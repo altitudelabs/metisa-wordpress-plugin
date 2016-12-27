@@ -20,7 +20,7 @@
 
 			// Build authorization link to OAuth2 Service Provider
 			var url = 'http://localhost:8001/oauth/authorize/';
-			url += '?response_type=code&client_id=of4tZkhMb1W5FODyuWXoBi7rLpOQMNguFso0yikm&state=';
+			url += '?response_type=code&client_id=pf1flhhoOPukYmdJaI69FMXXAM0xJUTrCQsSsex7&state=';
 			url += state;
 
 			return url;
