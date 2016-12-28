@@ -83,29 +83,3 @@ function log_me($message) {
 		}
 	}
 }
-
-function get_woocommerce_api_keys() {
-	global $wpdb;
-
-	// $offset = 0;
-	// $per_page = apply_filters( 'woocommerce_api_keys_settings_items_per_page', 10 );
-	$search = '';
-
-	// Get the API keys
-	$keys = $wpdb->get_results(
-		"SELECT key_id, user_id, description, permissions, consumer_key, consumer_secret, last_access
-		FROM {$wpdb->prefix}woocommerce_api_keys
-		WHERE 1 = 1 {$search}",
-		ARRAY_A
-	);
-
-	log_me('WOOCOMMERCE GET API KEYS DB RESULTS');
-	log_me($keys);
-
-	// foreach($keys as $key) {
-	// 	foreach($key as $prop => $value) {
-	// 		log_me($prop . ' ... : ' . $value);
-	// 	}
-	// }
-}
-// get_woocommerce_api_keys();

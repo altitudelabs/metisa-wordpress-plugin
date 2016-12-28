@@ -36,6 +36,7 @@
 <?php
 if ( get_option( 'metisa_access_token') )
 {
+  // Check for success param in URL, returned by WooCommerce API auth.
   if ( isset( $_GET['success'] ) ) {
     if ( $_GET['success'] == 1 ) {
       $success = True;

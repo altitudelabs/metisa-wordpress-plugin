@@ -2,16 +2,12 @@
 	'use strict';
 
 	$(function () {
+		// var METISA_URL = 'https://askmetisa.com/';
+		var METISA_URL = 'http://localhost:8000/';
 
 		$('#oauth-authorize').click(function (ev) {
 			ev.preventDefault();
 			window.open(getAuthUrl(), "popupWindow", "width=600,height=600,scrollbars=yes");
-
-			// $.ajax({
-			// 	url: getAuthUrl(),
-			// 	method: 'GET',
-			// 	success: exchangeForToken
-			// });
 		});
 
 		// TODO: State string must be randomised to prevent CSRF attacks
@@ -19,7 +15,7 @@
 			var state = 'chickennutbread';
 
 			// Build authorization link to OAuth2 Service Provider
-			var url = 'http://localhost:8001/oauth/authorize/';
+			var url = METISA_URL + 'oauth/authorize/';
 			url += '?response_type=code&client_id=pf1flhhoOPukYmdJaI69FMXXAM0xJUTrCQsSsex7&state=';
 			url += state;
 
