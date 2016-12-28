@@ -238,21 +238,4 @@ class Metisa_Admin {
 	    update_option( 'metisa_refresh_token', $token, '', 'yes');
 	  }
 	}
-
-
-	/**
-	 * WooCommerce section
-	 *
-	 * Functions used to generate WC REST API keys and send to Metisa.
-	 */
-
-	// Get WooCommerce REST API consumer_key and consumer_secret via HTTP.
-	function get_woocommerce_api_keys() {
-
-	}
-
-	// Send API keys and user_id (to identify which store) to Metisa via HTTP.
-	function post_keys_to_metisa() {
-
-	}
 }

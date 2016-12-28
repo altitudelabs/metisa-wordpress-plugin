@@ -36,12 +36,20 @@
 <?php
 if ( get_option( 'metisa_access_token') )
 {
+  if ( isset( $_GET['success'] ) ) {
+    if ( $_GET['success'] == 1 ) {
+      $success = True;
+    } elseif ( $_GET['success'] == 0 ) {
+      $success = False;
+    }
+  }
+
   $woocommerce_query_string = array(
-    'app_name' => urlencode('Metisa for WooCommerce'),
+    'app_name' => 'Metisa',
     'scope' => 'read_write',
     'return_url' => menu_page_url('Metisa'),
-    'callback_url' => 'https://localhost:8001/integrations/woocommerce/api/',
-    'user_id' => site_url()
+    'user_id' => 'Store123',
+    'callback_url' => 'https://c62fe2b3.ngrok.io/integrations/woocommerce/api'
   );
 
   // Build URL with WC API endpoint's required query parameters.
@@ -50,13 +58,17 @@ if ( get_option( 'metisa_access_token') )
 
   <h3>Step 2: Connect Metisa to your store</h3>
   <div>
+    <?php
+    if ($success) {
+      echo "<p>Connected Metisa successfully!</p>";
+    } ?>
+
     <a class="button button-primary" href="<?php echo $woocommerce_api_key_endpoint ?>">
       Connect Metisa
     </a>
   </div>
 
 <?php
-}
-?>
+} ?>
 
 </div>
