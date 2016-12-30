@@ -48,8 +48,6 @@ class Metisa_Admin {
 	 * @param      string    $version    The version of this plugin.
 	 */
 
-	private $metisa_token_url = 'http://127.0.0.1:8000/oauth/token/';
-
 	public function __construct( $metisa, $version ) {
 		$this->metisa = $metisa;
 		$this->version = $version;
@@ -108,13 +106,26 @@ class Metisa_Admin {
 
 	}
 
+	// Get OAuth2 URL to Metisa endpoint.
+	public function getAuthUrl() {
+		// Determine URL to use basd on $metisa_production.
+		global $metisa_production, $metisa_localhost_http, $metisa_url_live, $metisa_client_id;
+		$metisa_url = ($metisa_production) ? $metisa_url_live : $metisa_localhost_http;
+
+	  $state = 'm3ti5a';
+	  $url = $metisa_url . 'oauth/authorize/';
+	  $url .= '?response_type=code';
+	  $url .= '&client_id=' . $metisa_client_id;
+	  $url .= '&state=' . $state;
+
+	  return $url;
+	}
+
 	/**
 	 * Create the admin menu
 	 * TODO: ADD METISA LOGO TO DIRECTORY
 	 */
 	public function create_metisa_admin_menu() {
-		log_me('create_metisa_admin_menu() fired.');
-
 		// Add main page
 		add_menu_page(
 			'Metisa for WooCommerce',
@@ -133,7 +144,7 @@ class Metisa_Admin {
 	public function load_admin_page_partial() {
 		log_me('load_admin_page_partial() fired.');
 
-		require_once plugin_dir_path( __FILE__ ). 'partials/metisa-admin-display.php';
+		include plugin_dir_path( __FILE__ ). 'partials/metisa-admin-display.php';
 	}
 
 
@@ -151,13 +162,11 @@ class Metisa_Admin {
 				if ( $key == 'metisa-auth-code' ) {
 					$metisa_auth_code = $value;
 
-					log_me('Found metisa_auth_code: ' . $metisa_auth_code);
+					log_me('Received metisa_auth_code: ' . $metisa_auth_code);
 				}
 			}
 
 			if ( $metisa_auth_code && current_user_can( 'manage_options' ) ) {
-				log_me('Trying to authenticate client with Metisa...');
-
 		    $this->authenticate_client_with_metisa( $metisa_auth_code );
 		  }
 		} else {
@@ -167,14 +176,14 @@ class Metisa_Admin {
 	}
 
 	public function authenticate_client_with_metisa( $authorization_code = null ) {
-		log_me('authenticate_client_with_metisa() fired.');
-		log_me('$authorization_code: ' . $authorization_code);
+		global $metisa_production, $metisa_localhost_http, $metisa_url_live, $metisa_client_id, $metisa_client_secret;
+		$metisa_url = ($metisa_production) ? $metisa_url_live : $metisa_localhost_http;
 
-	  // Authenticate client.
-		log_me('try inside authenticate_client_with_metisa() fired.');
+		$oauth_token_endpoint = $metisa_url . 'oauth/token/';
+		$redirect_uri = $metisa_url . 'integrations/woocommerce/code/';
 
-    // Get access response that contains access token.
-    $response = wp_remote_post( 'http://192.168.1.119:8001/oauth/token/', array(
+    // Exchange authorization_code for access_token with Metisa server.
+    $response = wp_remote_post( $oauth_token_endpoint, array(
 			'headers' => array(
 				'Content-Type' => 'application/x-www-form-urlencoded'
 			),
@@ -183,14 +192,12 @@ class Metisa_Admin {
       'body' => array(
         'code' => $authorization_code,
         'grant_type' => 'authorization_code',
-        'redirect_uri' => 'http://192.168.1.119:8001/integrations/woocommerce/code/',
-        'client_id' => 'pf1flhhoOPukYmdJaI69FMXXAM0xJUTrCQsSsex7',
-        'client_secret' => 'Y5gd28VBW6BlCZDbnBLbL5otCpP0VTezlheyQ7Wr8OMU6pqWQQXq4xg54YaFQLMKcLWYS0SwZYoWQzvIjZKmVPNuE0d0t523DM8aVIbiMz0bYzBKUCkUFFax7rHvj3GN'
+        'redirect_uri' => $redirect_uri,
+        'client_id' => $metisa_client_id,
+        'client_secret' => $metisa_client_secret
         )
       )
     );
-
-		log_me('RESPONSE RECEIVED!');
 
 		// Handle errors.
 		if ( is_wp_error( $response ) ) {

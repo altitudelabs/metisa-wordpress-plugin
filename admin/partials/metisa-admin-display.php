@@ -11,6 +11,10 @@
  * @package    Metisa
  * @subpackage Metisa/admin/partials
  */
+
+global $metisa_production, $metisa_localhost_https, $metisa_url_live;
+$metisa_url = ($metisa_production) ? $metisa_url_live : $metisa_localhost_https;
+
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
@@ -20,7 +24,10 @@
 
   <h3>Step 1: Authenticate with Metisa</h3>
   <div>
-    <input id="oauth-authorize" name="oauth" type="button" value="Authenticate with Metisa" class="button button-secondary" />
+    <a class="button button-primary" href="<?php echo Metisa_Admin::getAuthUrl(); ?>" target="_blank">
+      Authenticate with Metisa
+    </a>
+    <!-- <input id="oauth-authorize" name="oauth" type="button" value="Authenticate with Metisa" class="button button-secondary" /> -->
   </div>
   <div>
     <form action="<?php echo admin_url('admin-post.php'); ?>" method="post">
@@ -32,16 +39,17 @@
     </form>
   </div>
 
-
 <?php
+
 if ( get_option( 'metisa_access_token') )
 {
+  $callback_url = $metisa_url . 'integrations/woocommerce/api/';
+
   // Check for success param in URL, returned by WooCommerce API auth.
+  $success = False;
   if ( isset( $_GET['success'] ) ) {
     if ( $_GET['success'] == 1 ) {
       $success = True;
-    } elseif ( $_GET['success'] == 0 ) {
-      $success = False;
     }
   }
 
@@ -49,20 +57,24 @@ if ( get_option( 'metisa_access_token') )
     'app_name' => 'Metisa',
     'scope' => 'read_write',
     'return_url' => menu_page_url('Metisa'),
-    'user_id' => 'Store123',
-    'callback_url' => 'https://c62fe2b3.ngrok.io/integrations/woocommerce/api'
+    'user_id' => urlencode( site_url() ),
+    'callback_url' => $callback_url
   );
 
   // Build URL with WC API endpoint's required query parameters.
   $woocommerce_api_key_endpoint = add_query_arg( $woocommerce_query_string, site_url( '/wc-auth/v1/authorize/' ) );
+
 ?>
 
   <h3>Step 2: Connect Metisa to your store</h3>
   <div>
     <?php
+
     if ($success) {
       echo "<p>Connected Metisa successfully!</p>";
-    } ?>
+    }
+
+    ?>
 
     <a class="button button-primary" href="<?php echo $woocommerce_api_key_endpoint ?>">
       Connect Metisa

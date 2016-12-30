@@ -57,6 +57,9 @@ register_deactivation_hook( __FILE__, 'deactivate_metisa' );
  */
 require plugin_dir_path( __FILE__ ) . 'includes/class-metisa.php';
 
+// Include the global variables.
+require plugin_dir_path( __FILE__ ) . 'admin/settings.php';
+
 /**
  * Begins execution of the plugin.
  *
