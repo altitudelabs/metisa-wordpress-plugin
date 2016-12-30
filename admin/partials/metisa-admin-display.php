@@ -24,13 +24,15 @@ $metisa_url = ($metisa_production) ? $metisa_url_live : $metisa_localhost_https;
 
   <h3>Step 1: Authenticate with Metisa</h3>
   <div>
-    <a class="button button-primary" href="<?php echo Metisa_Admin::getAuthUrl(); ?>" target="_blank">
+    <a class="button button-secondary" href="<?php echo Metisa_Admin::getAuthUrl(); ?>" target="_blank">
       Authenticate with Metisa
     </a>
-    <!-- <input id="oauth-authorize" name="oauth" type="button" value="Authenticate with Metisa" class="button button-secondary" /> -->
   </div>
   <div>
     <form action="<?php echo admin_url('admin-post.php'); ?>" method="post">
+      <?php wp_nonce_field( 'save_authcode' ); ?>
+
+      <!-- Value field in this hidden input will trigger metisa_handle_authcode_submit(). -->
       <input type="hidden" name="action" value="metisa_authcode_submit" />
 
       <label for="metisa-auth-code">Paste your Metisa code here:</label>
@@ -41,6 +43,7 @@ $metisa_url = ($metisa_production) ? $metisa_url_live : $metisa_localhost_https;
 
 <?php
 
+// Check if there's already an access token from Step 1.
 if ( get_option( 'metisa_access_token') )
 {
   $callback_url = $metisa_url . 'integrations/woocommerce/api/';

@@ -155,7 +155,7 @@ class Metisa_Admin {
 		$metisa_auth_code = '';
 
 		// Sanitize form data.
-		if ( !empty($_POST) ) {
+		if ( !empty($_POST) && check_admin_referer( 'save_authcode' ) ) {
 			log_me( $_POST );
 
 			foreach($_POST as $key => $value) {
